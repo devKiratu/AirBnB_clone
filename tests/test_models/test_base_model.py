@@ -3,6 +3,7 @@
 
 
 import unittest
+from datetime import datetime
 from models.base_model import BaseModel
 
 
@@ -34,3 +35,17 @@ class TestBaseModel(unittest.TestCase):
         self.assertIsInstance(new_dict["my_number"], int)
         self.assertIsInstance(new_dict["id"], str)
         self.assertEqual(new_dict["__class__"], "BaseModel")
+
+    def test_creating_BaseModel_from_dict(self):
+        """create BaseModel instance from a dictionary"""
+        m1 = BaseModel()
+        m1.name = "My_First_Model"
+        m1.my_number = 89
+        my_dict = m1.to_dict()
+        m2 = BaseModel(**my_dict)
+        self.assertEqual(m1.id, m2.id)
+        self.assertEqual(m1.name, m2.name)
+        self.assertEqual(m1.my_number, m2.my_number)
+        self.assertFalse(m1 is m2)
+        self.assertIsInstance(m1.created_at, datetime)
+        self.assertIsInstance(m1.updated_at, datetime)
