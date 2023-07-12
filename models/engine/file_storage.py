@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 """Contains class that enables data persistence via file storage"""
-
-
 import json
 
 
