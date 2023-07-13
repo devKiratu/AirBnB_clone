@@ -151,19 +151,27 @@ class HBNBCommand(cmd.Cmd):
 
     def default(self, args):
         """Override default behaviour to allow for complex commands"""
-        arg_list = args.split(".")
-        if len(arg_list) < 2:
-            print("*** Unknown syntax: {}".format(args))
-            return
-        cls_name, command, *_ = arg_list
-        if cls_name not in self.__allowed_classes.keys():
-            print("*** Unknown syntax: {}".format(args))
-            return
-        if command[:-2] == "all" and command.endswith("()"):
-            self.do_all(cls_name)
-        elif command[:-2] == "count" and command.endswith("()"):
-            self.count(cls_name)
-        else:
+        try:
+
+            arg_list = args.split(".")
+            if len(arg_list) < 2:
+                print("*** Unknown syntax: {}".format(args))
+                return
+            cls_name, command, *_ = arg_list
+            if cls_name not in self.__allowed_classes.keys():
+                print("*** Unknown syntax: {}".format(args))
+                return
+            if command[:-2] == "all" and command.endswith("()"):
+                self.do_all(cls_name)
+            elif command[:-2] == "count" and command.endswith("()"):
+                self.count(cls_name)
+            elif command[:4] == "show" and command[4] == "("\
+                    and command[-1] == ")":
+                obj_id = command[6:-2]
+                self.do_show("{} {}".format(cls_name, obj_id))
+            else:
+                print("*** Unknown syntax: {}".format(args))
+        except Exception:
             print("*** Unknown syntax: {}".format(args))
 
     def do_quit(self, line):
