@@ -152,15 +152,15 @@ class HBNBCommand(cmd.Cmd):
     def default(self, args):
         """Override default behaviour to allow for complex commands"""
         arg_list = args.split(".")
-        if len(arg_list) >= 2:
-            cls_name, command, *_ = arg_list
-            if cls_name in self.__allowed_classes.keys():
-                if command[:-2] == "all":
-                    self.do_all(arg_list[0])
-                else:
-                    print("*** Unknown syntax: {}".format(args))
-            else:
-                print("*** Unknown syntax: {}".format(args))
+        if len(arg_list) < 2:
+            print("*** Unknown syntax: {}".format(args))
+            return
+        cls_name, command, *_ = arg_list
+        if cls_name not in self.__allowed_classes.keys():
+            print("*** Unknown syntax: {}".format(args))
+            return
+        if command[:-2] == "all" and command.endswith("()"):
+            self.do_all(cls_name)
         else:
             print("*** Unknown syntax: {}".format(args))
 
