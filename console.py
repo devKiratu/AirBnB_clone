@@ -161,6 +161,8 @@ class HBNBCommand(cmd.Cmd):
             return
         if command[:-2] == "all" and command.endswith("()"):
             self.do_all(cls_name)
+        elif command[:-2] == "count" and command.endswith("()"):
+            self.count(cls_name)
         else:
             print("*** Unknown syntax: {}".format(args))
 
@@ -183,6 +185,18 @@ class HBNBCommand(cmd.Cmd):
         """Blocks execution for empty line + Enter
         """
         pass
+
+    def count(self, cls_name):
+        """prints the number of instances of class represented by 'cls_name'
+            Args:
+                cls_name: name of class whose number of instances are required
+        """
+        instance_count = 0
+        all_objs = storage.all()
+        for key, value in all_objs.items():
+            if value["__class__"] == cls_name:
+                instance_count += 1
+        print(instance_count)
 
 
 if __name__ == '__main__':
