@@ -168,6 +168,10 @@ class HBNBCommand(cmd.Cmd):
                     and command[-1] == ")":
                 obj_id = command[6:-2]
                 self.do_show("{} {}".format(cls_name, obj_id))
+            elif command[:7] == "destroy" and command[7] == "("\
+                    and command[-1] == ")":
+                obj_id = command[9:-2]
+                self.do_destroy(f"{cls_name} {obj_id}")
             else:
                 print("*** Unknown syntax: {}".format(args))
         except Exception:
