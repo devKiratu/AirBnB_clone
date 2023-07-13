@@ -149,6 +149,21 @@ class HBNBCommand(cmd.Cmd):
             storage.new(updated_obj)
             storage.save()
 
+    def default(self, args):
+        """Override default behaviour to allow for complex commands"""
+        arg_list = args.split(".")
+        if len(arg_list) >= 2:
+            cls_name, command, *_ = arg_list
+            if cls_name in self.__allowed_classes.keys():
+                if command[:-2] == "all":
+                    self.do_all(arg_list[0])
+                else:
+                    print("*** Unknown syntax: {}".format(args))
+            else:
+                print("*** Unknown syntax: {}".format(args))
+        else:
+            print("*** Unknown syntax: {}".format(args))
+
     def do_quit(self, line):
         """Quit command to exit the program
         """
