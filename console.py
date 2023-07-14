@@ -172,6 +172,14 @@ class HBNBCommand(cmd.Cmd):
                     and command[-1] == ")":
                 obj_id = command[9:-2]
                 self.do_destroy(f"{cls_name} {obj_id}")
+            elif command[:6] == "update" and command[6] == "("\
+                    and command[-1] == ")":
+                update_str = f"{cls_name}"
+                command_args = shlex.split(command[7:-1])
+
+                for c_arg in command_args:
+                    update_str += f" {c_arg.replace(',', '')}"
+                self.do_update(f"{update_str}")
             else:
                 print("*** Unknown syntax: {}".format(args))
         except Exception:
