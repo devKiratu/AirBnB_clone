@@ -88,3 +88,8 @@ hbnb) User.all()
 (hbnb) User.all()
 ["[User] (c71c5ddb-ba12-44ef-abd9-36aa5cc59dbc) {'id': 'c71c5ddb-ba12-44ef-abd9-36aa5cc59dbc', 'created_at': datetime.datetime(2023, 7, 16, 13, 4, 32, 804515), 'updated_at': datetime.datetime(2023, 7, 16, 13, 4, 32, 804521)}"]
 ```
+
+## Authors
+
+- [@devKiratu](https://github.com/devKiratu)
+- [@jarabi](https://github.com/Jarabi)
