@@ -175,11 +175,40 @@ class HBNBCommand(cmd.Cmd):
             elif command[:6] == "update" and command[6] == "("\
                     and command[-1] == ")":
                 update_str = f"{cls_name}"
-                command_args = shlex.split(command[7:-1])
 
-                for c_arg in command_args:
-                    update_str += f" {c_arg.replace(',', '')}"
-                self.do_update(f"{update_str}")
+                if len(command[7:-1]) != 0:
+                    '''Contain arguments in a list'''
+                    args_list = shlex.split(command[7:-1])
+
+                    '''Get object ID'''
+                    obj_id = args_list[0].replace(',', '')
+                    update_str += f" {obj_id}"
+
+                    '''Check if dictionary passed as an argument'''
+                    if '{' in command[7:-1] and '}' in command[7:-1]:
+                        dict_start = command[7:-1].find('{')
+                        dict_end = command[7:-1].find('}')
+
+                        dict_data = command[7:-1][dict_start + 1:dict_end]
+                        dict_list = shlex.split(dict_data)
+
+                        '''Check if dictionary list is empty'''
+                        if dict_list == []:
+                            self.do_update(update_str)
+                        else:
+                            '''Loop through the dictionary list'''
+                            for i in range(0, len(dict_list), 2):
+                                update_str = f"{cls_name} { obj_id}"
+                                key = dict_list[i].replace(':', '')
+                                value = dict_list[i + 1].replace(',', '')
+                                update_str += f" {key} {value}"
+                                self.do_update(update_str)
+                    else:
+                        for item in args_list[1:]:
+                            update_str += f" {item.replace(',', '')}"
+                        self.do_update(update_str)
+                else:
+                    self.do_update(update_str)
             else:
                 print("*** Unknown syntax: {}".format(args))
         except Exception:
