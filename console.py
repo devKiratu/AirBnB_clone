@@ -35,7 +35,7 @@ class HBNBCommand(cmd.Cmd):
         if not class_name:
             print("** class name missing **")
         elif class_name not in self.__allowed_classes.keys():
-            print("** class doesn't exist ** ")
+            print("** class doesn't exist **")
         else:
             obj = self.__allowed_classes[class_name]()
             obj.save()
@@ -122,7 +122,7 @@ class HBNBCommand(cmd.Cmd):
         arg_list = shlex.split(args)
         all_objs = storage.all()
         if len(arg_list) == 0:
-            print("** class name missing ** ")
+            print("** class name missing **")
             return
         if arg_list[0] not in self.__allowed_classes.keys():
             print("** class doesn't exist **")

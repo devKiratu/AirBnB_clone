@@ -11,6 +11,49 @@ from models import storage
 
 class TestHBNBCommand(unittest.TestCase):
     """Defines tests for the command line interpreter"""
+    def test_EOF(self):
+        """tests the EOF command"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            result = hbnb().do_EOF('')
+            self.assertTrue(result)
+            self.assertEqual("", f.getvalue().strip())
+            result2 = hbnb().onecmd("EOF")
+            self.assertEqual("", f.getvalue().strip())
+            self.assertTrue(result2)
+
+    def test_quit(self):
+        """tests the quit command"""
+        # exit system call made
+        with self.assertRaises(SystemExit):
+            hbnb().onecmd("quit")
+
+    def test_help(self):
+        """tests the help command"""
+        # all commands documented
+        # EOF  all  create  destroy  help  quit  show  update
+        with patch('sys.stdout', new=StringIO()) as f:
+            hbnb().onecmd("help")
+            output = f.getvalue().strip()
+            self.assertIn("EOF", output)
+            self.assertIn("all", output)
+            self.assertIn("create", output)
+            self.assertIn("destroy", output)
+            self.assertIn("help", output)
+            self.assertIn("quit", output)
+            self.assertIn("show", output)
+            self.assertIn("update", output)
+
+    def test_emptyline(self):
+        """tests the emptyline handler"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            hbnb().onecmd("BaseModel.count()")
+            f.truncate(0)
+            hbnb().onecmd("")
+            hbnb().onecmd("")
+            hbnb().onecmd("")
+            output = f.getvalue().strip()
+            self.assertEqual("", output)
+
     def test_create(self):
         """tests create command"""
         # missing class name
@@ -308,6 +351,78 @@ class TestHBNBCommand(unittest.TestCase):
             output = f.getvalue().strip()
             expected = "** no instance found **"
             self.assertEqual(expected, output)
+
+    def test_class_destroy_function_call(self):
+        """tests the <class name>.destroy(<id>) function call"""
+        # supported class, correct id
+        with patch('sys.stdout', new=StringIO()) as f:
+            hbnb().onecmd("create Review")
+            review_id = f.getvalue().strip()
+            f.truncate(0)
+            ids = self.get_ids()
+            self.assertIn(review_id, ids)  # object present in storage
+            destroy_command = "Review.destroy('{}')".format(review_id)
+            hbnb().onecmd(destroy_command)
+            ids = self.get_ids()
+            self.assertNotIn(review_id, ids)  # destroyed object not in storage
+            hbnb().onecmd(destroy_command)  # attempt delete on destroyed obj
+            expected = "** no instance found **"
+            output = f.getvalue().strip()
+            self.assertIn(expected, output)
+
+        # Supported class, invalid id or no such instance
+        with patch('sys.stdout', new=StringIO()) as f:
+            hbnb().onecmd("City.destroy('1212121212')")
+            expected = "** no instance found **"
+            actual = f.getvalue().strip()
+            self.assertEqual(expected, actual)
+
+    def test_class_update_with_key_value_function_call(self):
+        """tests <class name>.update(<id>, <attribute name>, <attribute value>)
+        function call
+        """
+        # Supported class, existing id, attribute, value
+        with patch('sys.stdout', new=StringIO()) as f:
+            hbnb().onecmd("create User")
+            user_id = f.getvalue().strip()
+            show_command = "show User {}".format(user_id)
+            output = f.getvalue().strip()
+            self.assertNotIn("first_name", output)
+            self.assertNotIn("John", output)
+            update_command = "User.update('{}', 'first_name', 'John')"\
+                .format(user_id)
+            hbnb().onecmd(update_command)
+            hbnb().onecmd(show_command)
+            output = f.getvalue().strip()
+            self.assertIn("first_name", output)
+            self.assertIn("John", output)
+            self.assertIn("'first_name': 'John'", output)
+            self.assertNotIn("'age' : '89'", output)
+            update_command = "User.update('{}', 'age', 89)".format(user_id)
+            hbnb().onecmd(update_command)
+            hbnb().onecmd(show_command)
+            output = f.getvalue().strip()
+            self.assertIn("'age': '89'", output)
+
+    def test_class_update_with_dictionary_function_call(self):
+        """tests the <class name>.update(<id>, <dictionary representation>)
+        function call
+        """
+        # Supported class, existing id, dictionary representation
+        with patch('sys.stdout', new=StringIO()) as f:
+            hbnb().onecmd("create User")
+            user_id = f.getvalue().strip()
+            show_command = "show User {}".format(user_id)
+            output = f.getvalue().strip()
+            self.assertNotIn("'f_name': 'John'", output)
+            self.assertNotIn("'age' : '89'", output)
+            update_dict = "{'f_name': 'John', 'age': 89}"
+            u_cmd = f"User.update('{user_id}', {update_dict})"
+            hbnb().onecmd(u_cmd)
+            hbnb().onecmd(show_command)
+            output = f.getvalue().strip()
+            self.assertIn("'f_name': 'John'", output)
+            self.assertIn("'age': '89'", output)
 
     # Helper methods for HBNBCommand commands #
     def count_objs(self, cls_name):
