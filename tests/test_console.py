@@ -377,6 +377,33 @@ class TestHBNBCommand(unittest.TestCase):
             actual = f.getvalue().strip()
             self.assertEqual(expected, actual)
 
+    def test_class_update_with_key_value_function_call(self):
+        """tests <class name>.update(<id>, <attribute name>, <attribute value>)
+        function call
+        """
+        # Supported class, existing id, attribute, value, extra values
+        with patch('sys.stdout', new=StringIO()) as f:
+            hbnb().onecmd("create User")
+            user_id = f.getvalue().strip()
+            show_command = "show User {}".format(user_id)
+            output = f.getvalue().strip()
+            self.assertNotIn("first_name", output)
+            self.assertNotIn("John", output)
+            update_command = "User.update('{}', 'first_name', 'John')"\
+                .format(user_id)
+            hbnb().onecmd(update_command)
+            hbnb().onecmd(show_command)
+            output = f.getvalue().strip()
+            self.assertIn("first_name", output)
+            self.assertIn("John", output)
+            self.assertIn("'first_name': 'John'", output)
+            self.assertNotIn("'age' : '89'", output)
+            update_command = "User.update('{}', 'age', 89)".format(user_id)
+            hbnb().onecmd(update_command)
+            hbnb().onecmd(show_command)
+            output = f.getvalue().strip()
+            self.assertIn("'age': '89'", output)
+
     # Helper methods for HBNBCommand commands #
     def count_objs(self, cls_name):
         """counts the actual objects of type 'cls_name'0 present in storage"""
