@@ -381,7 +381,7 @@ class TestHBNBCommand(unittest.TestCase):
         """tests <class name>.update(<id>, <attribute name>, <attribute value>)
         function call
         """
-        # Supported class, existing id, attribute, value, extra values
+        # Supported class, existing id, attribute, value
         with patch('sys.stdout', new=StringIO()) as f:
             hbnb().onecmd("create User")
             user_id = f.getvalue().strip()
@@ -402,6 +402,26 @@ class TestHBNBCommand(unittest.TestCase):
             hbnb().onecmd(update_command)
             hbnb().onecmd(show_command)
             output = f.getvalue().strip()
+            self.assertIn("'age': '89'", output)
+
+    def test_class_update_with_dictionary_function_call(self):
+        """tests the <class name>.update(<id>, <dictionary representation>)
+        function call
+        """
+        # Supported class, existing id, dictionary representation
+        with patch('sys.stdout', new=StringIO()) as f:
+            hbnb().onecmd("create User")
+            user_id = f.getvalue().strip()
+            show_command = "show User {}".format(user_id)
+            output = f.getvalue().strip()
+            self.assertNotIn("'f_name': 'John'", output)
+            self.assertNotIn("'age' : '89'", output)
+            update_dict = "{'f_name': 'John', 'age': 89}"
+            u_cmd = f"User.update('{user_id}', {update_dict})"
+            hbnb().onecmd(u_cmd)
+            hbnb().onecmd(show_command)
+            output = f.getvalue().strip()
+            self.assertIn("'f_name': 'John'", output)
             self.assertIn("'age': '89'", output)
 
     # Helper methods for HBNBCommand commands #
